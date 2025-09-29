@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVIA - AI Mock Interview Platform</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <h1>AIVIA</h1>
+                        <span class="tagline">AI Mock Interview Platform</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Landing/Role Selection Screen -->
+            <section id="role-selection" class="screen active">
+                <div class="container">
+                    <div class="screen-content">
+                        <h2>Select Your Role</h2>
+                        <p class="subtitle">Choose the position you're interviewing for</p>
+                        <div class="roles-grid" id="roles-grid">
+                            <!-- Role cards will be dynamically generated -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resume Upload Screen -->
+            <section id="resume-upload" class="screen">
+                <div class="container">
+                    <div class="screen-content">
+                        <h2>Upload Your Resume</h2>
+                        <p class="subtitle">Upload your resume to personalize the interview</p>
+                        
+                        <div class="upload-container">
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-content">
+                                    <div class="upload-icon">📄</div>
+                                    <h3>Drop your resume here</h3>
+                                    <p>or <button type="button" class="upload-trigger">browse files</button></p>
+                                    <p class="file-types">Supports PDF and DOCX files (max 10MB)</p>
+                                </div>
+                                <input type="file" id="file-input" accept=".pdf,.docx" hidden>
+                            </div>
+                            
+                            <div class="upload-progress hidden" id="upload-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progress-fill"></div>
+                                </div>
+                                <p class="progress-text" id="progress-text">Uploading...</p>
+                            </div>
+
+                            <div class="file-info hidden" id="file-info">
+                                <div class="file-details">
+                                    <span class="file-name" id="file-name"></span>
+                                    <span class="file-size" id="file-size"></span>
+                                </div>
+                                <button type="button" class="btn btn--outline" id="remove-file">Remove</button>
+                            </div>
+                        </div>
+
+                        <div class="screen-actions">
+                            <button type="button" class="btn btn--secondary" id="back-to-roles">Back</button>
+                            <button type="button" class="btn btn--primary" id="start-interview" disabled>Start Interview</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interview Setup Screen -->
+            <section id="interview-setup" class="screen">
+                <div class="container">
+                    <div class="screen-content">
+                        <h2>Setting Up Your Interview</h2>
+                        <p class="subtitle">Creating personalized AI agent...</p>
+                        
+                        <div class="setup-progress">
+                            <div class="setup-steps">
+                                <div class="setup-step active" id="step-1">
+                                    <div class="step-icon">✓</div>
+                                    <span>Processing Resume</span>
+                                </div>
+                                <div class="setup-step" id="step-2">
+                                    <div class="step-icon">⏳</div>
+                                    <span>Creating AI Agent</span>
+                                </div>
+                                <div class="setup-step" id="step-3">
+                                    <div class="step-icon">⏳</div>
+                                    <span>Connecting to Voice Service</span>
+                                </div>
+                            </div>
+                            <div class="setup-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Voice Interview Screen -->
+            <section id="voice-interview" class="screen">
+                <div class="container">
+                    <div class="screen-content">
+                        <div class="interview-header">
+                            <h2>Live Interview</h2>
+                            <div class="interview-role" id="current-role"></div>
+                        </div>
+
+                        <div class="avatar-container">
+                            <div class="avatar" id="avatar">
+                                <div class="avatar-ball" id="avatar-ball"></div>
+                            </div>
+                            <div class="avatar-status" id="avatar-status">Ready for interview</div>
+                        </div>
+
+                        <div class="interview-controls">
+                            <button type="button" class="control-btn" id="start-stop-btn">
+                                <span class="btn-text">Start Interview</span>
+                            </button>
+                            <button type="button" class="control-btn secondary" id="mute-btn">
+                                <span class="btn-text">🎤 Unmuted</span>
+                            </button>
+                        </div>
+
+                        <div class="interview-progress">
+                            <div class="progress-info">
+                                <span>Question <span id="current-question">1</span> of <span id="total-questions">4</span></span>
+                                <span class="interview-time" id="interview-time">00:00</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="interview-progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="current-question" id="current-question-text">
+                            Click "Start Interview" to begin
+                        </div>
+
+                        <div class="screen-actions">
+                            <button type="button" class="btn btn--outline" id="end-interview">End Interview</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Completion Screen -->
+            <section id="interview-complete" class="screen">
+                <div class="container">
+                    <div class="screen-content">
+                        <div class="completion-icon">🎉</div>
+                        <h2>Interview Complete!</h2>
+                        <p class="subtitle">Thank you for using AIVIA. Your interview has been completed.</p>
+                        
+                        <div class="completion-stats">
+                            <div class="stat">
+                                <span class="stat-label">Duration</span>
+                                <span class="stat-value" id="final-duration">0:00</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Questions</span>
+                                <span class="stat-value" id="questions-completed">0/4</span>
+                            </div>
+                        </div>
+
+                        <div class="next-steps">
+                            <h3>Next Steps</h3>
+                            <ul>
+                                <li>Interview recording will be processed</li>
+                                <li>Feedback report will be generated</li>
+                                <li>You'll receive an email with detailed analysis</li>
+                            </ul>
+                        </div>
+
+                        <div class="screen-actions">
+                            <button type="button" class="btn btn--primary" id="start-new-interview">Start New Interview</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay hidden" id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <!-- Error Messages -->
+        <div class="error-toast hidden" id="error-toast">
+            <span class="error-message" id="error-message"></span>
+            <button type="button" class="close-error" id="close-error">×</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
