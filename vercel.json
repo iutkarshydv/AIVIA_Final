@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "functions": {
+    "api/session/route.ts": {
+      "maxDuration": 60
+    },
+    "api/token/route.ts": {
+      "maxDuration": 10
+    },
+    "api/session/[id]/transcript/route.ts": {
+      "maxDuration": 10
+    },
+    "api/webhook/elevenlabs/route.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "NEON_DB_URL": "@neon_db_url",
+    "ELEVEN_API_KEY": "@eleven_api_key",
+    "ELEVEN_REALTIME_BASE_URL": "@eleven_realtime_base_url",
+    "GEMINI_API_KEY": "@gemini_api_key",
+    "GEMINI_ENDPOINT": "@gemini_endpoint",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@clerk_publishable_key",
+    "CLERK_SECRET_KEY": "@clerk_secret_key",
+    "WEBHOOK_SECRET": "@webhook_secret",
+    "JWT_SECRET": "@jwt_secret",
+    "NEXT_PUBLIC_APP_URL": "@app_url"
+  },
+  "regions": ["iad1"],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
