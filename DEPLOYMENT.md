@@ -90,22 +90,17 @@ git push -u origin main
 
    ```
    DATABASE_URL
-   postgresql://neondb_owner:npg_YJ1U7GjCXprB@ep-round-surf-a1b8yd4t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
    NEON_DB_URL
-   postgresql://neondb_owner:npg_YJ1U7GjCXprB@ep-round-surf-a1b8yd4t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
    ELEVEN_API_KEY
-   d6c1df94093c89168001061d7555aa24d6e68817b5d6fb96ae7da2d31db3dae3
+   
 
    GEMINI_API_KEY
-   YOUR_GEMINI_API_KEY_HERE
 
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-   pk_test_Y2xlYXItdHVuYS0xMC5jbGVyay5hY2NvdW50cy5kZXYk
 
    CLERK_SECRET_KEY
-   sk_test_STzU49UefbvPH7ebfNjEqzxq7pbcREH1zvToXhhEiI
 
    WEBHOOK_SECRET
    (Generate a random 32+ character string)
