@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         break;
 
       default:
-        logger.debug({ eventType: event.event_type }, 'Unhandled event type');
+        logger.debug('Unhandled event type', { eventType: event.event_type });
     }
 
     return NextResponse.json({ success: true });

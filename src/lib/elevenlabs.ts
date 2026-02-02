@@ -23,7 +23,7 @@ export async function createElevenLabsAgent(
   resumeSummary: ResumeSummary,
   jobDescription: string
 ): Promise<string> {
-  logger.info({ sessionId }, 'Creating ElevenLabs agent configuration');
+  logger.info('Creating ElevenLabs agent configuration', { sessionId });
 
   try {
     // Assemble knowledge base content with resume, JD, and rubric
@@ -43,7 +43,7 @@ export async function createElevenLabsAgent(
     // Priority 1: Use agent ID from environment variable
     if (ELEVEN_LABS_AGENT_ID) {
       agentId = ELEVEN_LABS_AGENT_ID;
-      logger.info({ agentId, sessionId }, 'Using configured ElevenLabs agent');
+      logger.info('Using configured ElevenLabs agent', { agentId, sessionId });
       
       // Try to update agent configuration via API (if supported)
       await updateAgentConfiguration(agentId, {
@@ -51,7 +51,7 @@ export async function createElevenLabsAgent(
         systemPrompt,
         firstMessage,
       }).catch((err) => {
-        logger.warn({ error: err }, 'Could not update agent configuration via API, will use database storage');
+        logger.warn('Could not update agent configuration via API, will use database storage', { error: err });
       });
     } else {
       // Priority 2: Try to fetch existing agents
@@ -79,11 +79,11 @@ export async function createElevenLabsAgent(
 
       if (agentsResponse && agentsResponse.agents && agentsResponse.agents.length > 0) {
         agentId = agentsResponse.agents[0].agent_id;
-        logger.info({ agentId }, 'Using first available ElevenLabs agent');
+        logger.info('Using first available ElevenLabs agent', { agentId });
       } else {
         // Use placeholder for development
         agentId = 'agent_' + sessionId.substring(0, 16);
-        logger.warn({ agentId }, 'Using placeholder agent ID');
+        logger.warn('Using placeholder agent ID', { agentId });
       }
     }
 
@@ -119,7 +119,7 @@ export async function createElevenLabsAgent(
 
     return agentId;
   } catch (error) {
-    logger.error({ error, sessionId }, 'Failed to create ElevenLabs agent');
+    logger.error('Failed to create ElevenLabs agent', { error, sessionId });
     throw createApiError(
       'AGENT_CREATION_FAILED',
       'Failed to create interview agent',
@@ -160,9 +160,9 @@ async function updateAgentConfiguration(
       throw new Error(`Failed to update agent: ${response.status}`);
     }
 
-    logger.info({ agentId }, 'Agent configuration updated successfully');
+    logger.info('Agent configuration updated successfully', { agentId });
   } catch (error) {
-    logger.warn({ error, agentId }, 'Failed to update agent configuration');
+    logger.warn('Failed to update agent configuration', { error, agentId });
     throw error;
   }
 }
@@ -303,7 +303,7 @@ export async function createRealtimeToken(
   sessionId: string,
   agentId: string
 ): Promise<ElevenLabsRealtimeSession> {
-  logger.info({ sessionId, agentId }, 'Generating ElevenLabs realtime token');
+  logger.info('Generating ElevenLabs realtime token', { sessionId, agentId });
 
   // Retrieve stored agent configuration from database
   const session = await prisma.session.findUnique({
@@ -320,7 +320,7 @@ export async function createRealtimeToken(
         const url = new URL(`${ELEVEN_BASE_URL}/convai/conversation/get_signed_url`);
         url.searchParams.append('agent_id', agentId);
         
-        logger.info({ url: url.toString() }, 'Requesting signed URL from ElevenLabs');
+        logger.info('Requesting signed URL from ElevenLabs', { url: url.toString() });
         
         const res = await fetch(url.toString(), {
           method: 'GET',
@@ -331,12 +331,12 @@ export async function createRealtimeToken(
 
         if (!res.ok) {
           const errorText = await res.text();
-          logger.error({ status: res.status, error: errorText }, 'ElevenLabs API error');
+          logger.error('ElevenLabs API error', { status: res.status, error: errorText });
           throw new Error(`Token generation failed: ${res.status} - ${errorText}`);
         }
 
         const data = await res.json();
-        logger.info({ response: data }, 'Received signed URL response');
+        logger.info('Received signed URL response', { response: data });
         return data;
       },
       {
@@ -354,26 +354,28 @@ export async function createRealtimeToken(
 
     const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
 
-    logger.info({ sessionId, wsUrl }, 'Realtime token generated successfully');
+    logger.info('Realtime token generated successfully', { sessionId, wsUrl });
 
     return {
+      session_id: sessionId,
+      agent_id: agentId,
       token: wsUrl, // The signed URL IS the token
-      wsUrl,
-      expiresAt,
-      conversationConfig: agentConfig,
+      ws_url: wsUrl,
+      expires_at: Date.now() + 3600 * 1000,
     };
   } catch (error) {
-    logger.error({ error, sessionId, agentId }, 'Failed to generate realtime token');
+    logger.error('Failed to generate realtime token', { error, sessionId, agentId });
     
     // Only use mock mode if explicitly no agent ID is configured
     if (!ELEVEN_LABS_AGENT_ID) {
       logger.warn('Falling back to mock mode - no ELEVEN_LABS_AGENT_ID configured');
       
       return {
+        session_id: sessionId,
+        agent_id: agentId || 'mock_agent',
         token: `mock_token_${sessionId}`,
-        wsUrl: `wss://mock-websocket-url`,
-        expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(),
-        conversationConfig: agentConfig,
+        ws_url: `wss://mock-websocket-url`,
+        expires_at: Date.now() + 3600 * 1000,
       };
     }
     
@@ -404,7 +406,7 @@ export async function listVoices(): Promise<any[]> {
     const data = await response.json();
     return data.voices || [];
   } catch (error) {
-    logger.error({ error }, 'Failed to list voices');
+    logger.error('Failed to list voices', { error });
     return [];
   }
 }
@@ -424,13 +426,13 @@ export async function getAgentConfig(agentId: string): Promise<any> {
     );
 
     if (!response.ok) {
-      logger.warn({ agentId }, 'Could not fetch agent config');
+      logger.warn('Could not fetch agent config', { agentId });
       return null;
     }
 
     return response.json();
   } catch (error) {
-    logger.error({ error, agentId }, 'Error fetching agent config');
+    logger.error('Error fetching agent config', { error, agentId });
     return null;
   }
 }

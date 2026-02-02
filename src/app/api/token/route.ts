@@ -64,8 +64,8 @@ export async function POST(req: NextRequest) {
 
     const response: GetTokenResponse = {
       realtimeToken: realtimeSession.token,
-      elevenWsUrl: realtimeSession.wsUrl,
-      expiresAt: realtimeSession.expiresAt,
+      elevenWsUrl: realtimeSession.ws_url,
+      expiresAt: realtimeSession.expires_at,
       agentId: session.agentId,
     };
 

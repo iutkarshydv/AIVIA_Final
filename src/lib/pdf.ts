@@ -6,7 +6,7 @@ import { logger } from './logger';
  * Extract text content from PDF buffer
  */
 export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
-  logger.info({ size: buffer.length }, 'Extracting text from PDF');
+  logger.info('Extracting text from PDF', { size: buffer.length });
 
   try {
     const data = await pdfParse(buffer);
@@ -31,7 +31,7 @@ export async function extractTextFromPDF(buffer: Buffer): Promise<string> {
 
     return text;
   } catch (error) {
-    logger.error({ error }, 'Failed to extract PDF text');
+    logger.error('Failed to extract PDF text', { error });
 
     if (error instanceof Error && error.message.includes('Invalid PDF')) {
       throw createApiError(
@@ -64,8 +64,8 @@ export function sanitizeResumeText(text: string): string {
   const maxLength = 50000; // ~12.5k tokens
   if (sanitized.length > maxLength) {
     logger.warn(
-      { originalLength: sanitized.length, maxLength },
-      'Resume text truncated'
+      'Resume text truncated',
+      { originalLength: sanitized.length, maxLength }
     );
     sanitized = sanitized.substring(0, maxLength);
   }

@@ -70,7 +70,7 @@ export async function summarizeResume(
     );
 
     const text = result.response.text();
-    logger.debug({ responseLength: text.length }, 'Received Gemini response');
+    logger.debug('Received Gemini response', { responseLength: text.length });
 
     // Clean the response - remove markdown code blocks if present
     let cleanedText = text.trim();
@@ -107,7 +107,7 @@ export async function summarizeResume(
     try {
       summary = JSON.parse(cleanedText);
     } catch (parseError) {
-      logger.error({ text: cleanedText, parseError }, 'Failed to parse Gemini JSON response');
+      logger.error('Failed to parse Gemini JSON response', { text: cleanedText, parseError });
       
       // Try to extract what we can
       try {
@@ -130,7 +130,7 @@ export async function summarizeResume(
 
     // Validate required fields (make education optional)
     if (!summary.skills || !summary.experience || !summary.summary) {
-      logger.error({ summary }, 'Invalid resume summary structure');
+      logger.error('Invalid resume summary structure', { summary });
       throw createApiError(
         'GEMINI_INVALID_RESPONSE',
         'Resume summary is missing required fields',
@@ -152,7 +152,7 @@ export async function summarizeResume(
 
     return summary;
   } catch (error) {
-    logger.error({ error }, 'Gemini API error');
+    logger.error('Gemini API error', { error });
     
     if (error instanceof Error && error.message.includes('API key')) {
       throw createApiError('GEMINI_AUTH_ERROR', 'Invalid Gemini API key', 401);
@@ -210,7 +210,7 @@ Return ONLY valid JSON:
     
     return analysis;
   } catch (error) {
-    logger.error({ error }, 'Failed to analyze job description');
+    logger.error('Failed to analyze job description', { error });
     throw createApiError(
       'GEMINI_JD_ANALYSIS_ERROR',
       'Failed to analyze job description',

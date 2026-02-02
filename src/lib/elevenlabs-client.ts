@@ -36,6 +36,7 @@ export class ElevenLabsRealtimeClient {
   private audioStreamManager: AudioStreamManager;
   private audioPlaybackQueue: AudioPlaybackQueue;
   private vad: VoiceActivityDetector | null = null;
+  private hasLoggedFirstChunk = false;
 
   // Event handlers
   private onConnectionStateChange?: (state: ConnectionState) => void;
@@ -90,9 +91,9 @@ export class ElevenLabsRealtimeClient {
       console.log('🎵 Setting up audio streaming callback...');
       this.audioStreamManager.onAudioData((audioData) => {
         // Log first audio chunk only
-        if (!this.audioStreamManager['_hasLoggedFirstChunk']) {
+        if (!this.hasLoggedFirstChunk) {
           console.log('🎙️ First audio chunk received, length:', audioData.length);
-          this.audioStreamManager['_hasLoggedFirstChunk'] = true;
+          this.hasLoggedFirstChunk = true;
         }
         this.sendAudioChunk(audioData);
       });
@@ -337,7 +338,7 @@ export class ElevenLabsRealtimeClient {
   /**
    * Handle audio chunk from agent
    */
-  private handleAudioChunk(data: { audio: string }): void {
+  private async handleAudioChunk(data: { audio: string }): Promise<void> {
     try {
       // Decode base64 audio
       const binaryString = atob(data.audio);
@@ -346,17 +347,9 @@ export class ElevenLabsRealtimeClient {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      // Convert to Float32Array for playback
-      const audioData = new Float32Array(bytes.length / 2);
-      const dataView = new DataView(bytes.buffer);
-      
-      for (let i = 0; i < audioData.length; i++) {
-        audioData[i] = dataView.getInt16(i * 2, true) / 32768.0;
-      }
-
-      // Queue for playback
-      console.log('🔊 Queueing audio for playback, samples:', audioData.length);
-      this.audioPlaybackQueue.enqueue(audioData);
+      // Queue for playback - addChunk expects ArrayBuffer
+      console.log('🔊 Queueing audio for playback, bytes:', bytes.length);
+      await this.audioPlaybackQueue.addChunk(bytes.buffer);
     } catch (error) {
       console.error('❌ Failed to process audio chunk:', error);
     }

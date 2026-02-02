@@ -6,7 +6,7 @@
 export class VoiceActivityDetector {
   private audioContext: AudioContext;
   private analyser: AnalyserNode;
-  private dataArray: Uint8Array;
+  private dataArray: Uint8Array<ArrayBuffer>;
   private isActive = false;
   private checkInterval: number | null = null;
   private threshold = 30; // Volume threshold (0-255)

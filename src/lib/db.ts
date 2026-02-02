@@ -1,25 +1,16 @@
 import { PrismaClient } from '@prisma/client';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import ws from 'ws';
-
-// Configure Neon for serverless WebSocket
-neonConfig.webSocketConstructor = ws;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Create Neon connection pool
-const connectionString = process.env.DATABASE_URL;
-
 let prisma: PrismaClient;
 
 if (process.env.NODE_ENV === 'production') {
-  // Production: Use Neon serverless driver with connection pooling
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaNeon(pool);
-  prisma = new PrismaClient({ adapter });
+  // Production: Use Prisma with direct connection for serverless
+  prisma = new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
+  });
 } else {
   // Development: Use standard Prisma client with connection reuse
   if (!globalForPrisma.prisma) {
