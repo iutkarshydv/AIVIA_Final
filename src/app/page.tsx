@@ -24,7 +24,7 @@ export default async function HomePage() {
             natural conversation flow, and instant feedback.
           </p>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap">
             <Link
               href="/sign-up"
               className="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
@@ -36,6 +36,12 @@ export default async function HomePage() {
               className="px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
             >
               Sign In
+            </Link>
+            <Link
+              href="/trial"
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-colors shadow-lg"
+            >
+              Try Once →
             </Link>
           </div>
 
